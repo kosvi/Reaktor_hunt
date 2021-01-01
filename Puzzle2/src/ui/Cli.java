@@ -10,6 +10,7 @@ import tools.SignalMapper;
 public class Cli {
 
 	private Scanner input;
+	private SignalMapper signalMapper;
 	private String filename;
 
 	public Cli(Scanner input) {
@@ -17,20 +18,34 @@ public class Cli {
 	}
 
 	public void start() {
+		if (!this.getFilename()) {
+			return;
+		}
 		while (true) {
-			if (!this.getFilename()) {
-				break;
-			}
-			try (Scanner fileReader = new Scanner(Paths.get(this.filename))) {
-				if (fileReader.hasNextLine()) {
-					SignalMapper sm = new SignalMapper(fileReader.nextLine());
-					System.out.println("Signal base value: " + sm.toString());
-				}
-			} catch (IOException e) {
+			this.printMenu();
+			int selection = 0;
+			try {
+				selection = Integer.valueOf(input.nextLine());
+			} catch (NumberFormatException e) {
 				System.err.println(e.getMessage());
+			}
+			if (selection == 3) {
+				break;
+			} else if (selection == 2) {
+				System.out.println(this.signalMapper.getSignalData());
+			} else if (selection == 1) {
+				this.signalMapper.addCharacterToBase();
 			}
 		}
 		System.out.println("Goodbye!");
+	}
+
+	private void printMenu() {
+		System.out.println("\nUsing file: " + this.filename);
+		System.out.println("Current base value: " + this.signalMapper);
+		System.out.println("1) generate next char to base value");
+		System.out.println("2) show current signaldata");
+		System.out.println("3) exit");
 	}
 
 	private boolean getFilename() {
@@ -45,6 +60,14 @@ public class Cli {
 			// check if file exists, don't check the contents validity
 			if (file.exists() && !file.isDirectory()) {
 				this.filename = filename;
+				try (Scanner fileReader = new Scanner(Paths.get(this.filename))) {
+					if (fileReader.hasNextLine()) {
+						this.signalMapper = new SignalMapper(fileReader.nextLine());
+					}
+				} catch (IOException e) {
+					System.err.println(e.getMessage());
+				}
+
 				return true;
 			}
 		}
