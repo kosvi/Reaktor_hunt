@@ -13,3 +13,5 @@
 Sounds good! Happy coding to myself! I have never done anything like this, so let's see what comes out of this. 
 
 
+Tried to study pathfinding from here:
+[https://en.wikipedia.org/wiki/Pathfinding](https://en.wikipedia.org/wiki/Pathfinding)

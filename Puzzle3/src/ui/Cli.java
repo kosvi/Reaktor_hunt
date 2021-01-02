@@ -1,5 +1,6 @@
 package ui;
 
+import pathfinder.Path;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -12,6 +13,7 @@ public class Cli {
 	private Scanner input;
 	private String filename;
 	private TheGrid grid;
+	private Path route;
 
 	public Cli(Scanner input) {
 		this.input = input;
@@ -33,22 +35,33 @@ public class Cli {
 			if (selection == 1) {
 				this.grid.generateMatrix();
 			} else if (selection == 2) {
-				Node[][] matrix = this.grid.getMatrix();
-				for (int i = 0; i < matrix.length; i++) {
-					for (int j = 0; j < matrix[i].length; j++) {
-						if (matrix[i][j] != null) {
-							System.out.print(matrix[i][j].getType());
-						} else {
-							System.out.print(" ");
-						}
-					}
-					System.out.print("\n");
-				}
+				this.drawMatrix();
+			} else if (selection == 3) {
+				this.findPath();
 			} else if (selection == 4) {
 				break;
 			}
 		}
 		System.out.println("Goodbye!");
+	}
+
+	private void findPath() {
+		this.route = new Path(this.grid.getMatrix());
+		this.route.findRoute();
+	}
+
+	private void drawMatrix() {
+		Node[][] matrix = this.grid.getMatrix();
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[i].length; j++) {
+				if (matrix[i][j] != null) {
+					System.out.print(matrix[i][j].getType());
+				} else {
+					System.out.print(" ");
+				}
+			}
+			System.out.print("\n");
+		}
 	}
 
 	private void printMenu() {

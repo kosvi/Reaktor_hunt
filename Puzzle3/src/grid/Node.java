@@ -21,8 +21,8 @@ public class Node {
 		this.type = type;
 	}
 
-	public void visit() {
-		this.visited++;
+	public void setVisited(int visit) {
+		this.visited = visit;
 	}
 
 	public boolean safeForMoving() {
