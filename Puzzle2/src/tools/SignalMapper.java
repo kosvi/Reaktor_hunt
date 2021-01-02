@@ -28,6 +28,14 @@ public class SignalMapper {
 		return this.signalData;
 	}
 
+	public void generateBaseValue() {
+		while (true) {
+			if (this.addCharacterToBase() == END_CHARACTER) {
+				break;
+			}
+		}
+	}
+
 	// I guess it could be done like this as well:
 	// https://stackoverflow.com/questions/31990103/more-effective-method-for-finding-the-most-common-character-in-a-string
 	// ...and I guess it is more efficient then my method, but I don't want to
@@ -73,17 +81,14 @@ public class SignalMapper {
 		} else {
 			// else we split with the current "last" char of the base value
 			char lastChar = this.baseValue.toString().charAt(this.baseValue.length() - 1);
-			System.out.println("Splitting with " + lastChar);
 			String[] pieces = this.signal.split(Character.toString(lastChar));
 			for (String piece : pieces) {
-				System.out.print(piece + " - ");
 				if (piece.length() > 0) {
 					char firstChar = piece.charAt(0);
 					nextCharacters.append(firstChar);
 				}
 			}
 		}
-		System.out.println("\nGenerated string: (" + nextCharacters.length() + ") " + nextCharacters);
 
 		Map<Character, Integer> characters = this.calculateCharacters(nextCharacters.toString());
 		// and then we will calculate what occurred the most

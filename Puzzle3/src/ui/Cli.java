@@ -4,17 +4,18 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Scanner;
-
-import tools.SignalMapper;
+import grid.TheGrid;
+import grid.Node;
 
 public class Cli {
 
 	private Scanner input;
-	private SignalMapper signalMapper;
 	private String filename;
+	private TheGrid grid;
 
 	public Cli(Scanner input) {
 		this.input = input;
+		this.grid = new TheGrid();
 	}
 
 	public void start() {
@@ -29,14 +30,22 @@ public class Cli {
 			} catch (NumberFormatException e) {
 				System.err.println(e.getMessage());
 			}
-			if (selection == 4) {
-				break;
-			} else if (selection == 3) {
-				this.signalMapper.generateBaseValue();
+			if (selection == 1) {
+				this.grid.generateMatrix();
 			} else if (selection == 2) {
-				System.out.println(this.signalMapper.getSignalData());
-			} else if (selection == 1) {
-				this.signalMapper.addCharacterToBase();
+				Node[][] matrix = this.grid.getMatrix();
+				for (int i = 0; i < matrix.length; i++) {
+					for (int j = 0; j < matrix[i].length; j++) {
+						if (matrix[i][j] != null) {
+							System.out.print(matrix[i][j].getType());
+						} else {
+							System.out.print(" ");
+						}
+					}
+					System.out.print("\n");
+				}
+			} else if (selection == 4) {
+				break;
 			}
 		}
 		System.out.println("Goodbye!");
@@ -44,16 +53,15 @@ public class Cli {
 
 	private void printMenu() {
 		System.out.println("\nUsing file: " + this.filename);
-		System.out.println("Current base value: " + this.signalMapper);
-		System.out.println("1) generate next char to base value");
-		System.out.println("2) show current signaldata");
-		System.out.println("3) generate rest of the base value");
+		System.out.println("1) generate matrix");
+		System.out.println("2) draw matrix");
+		System.out.println("3) find route");
 		System.out.println("4) exit");
 	}
 
 	private boolean getFilename() {
 		while (true) {
-			System.out.println("Give path to signaldata (exit to Exit): ");
+			System.out.println("Give path to neuraldata (exit to Exit): ");
 			System.out.print("> ");
 			String filename = input.nextLine();
 			if (filename.equalsIgnoreCase("exit")) {
@@ -64,13 +72,14 @@ public class Cli {
 			if (file.exists() && !file.isDirectory()) {
 				this.filename = filename;
 				try (Scanner fileReader = new Scanner(Paths.get(this.filename))) {
-					if (fileReader.hasNextLine()) {
-						this.signalMapper = new SignalMapper(fileReader.nextLine());
+					int i = 0;
+					while (fileReader.hasNextLine()) {
+						System.out.print("\nReading strand " + ++i + "... ");
+						this.grid.insertStrand(fileReader.nextLine());
 					}
 				} catch (IOException e) {
 					System.err.println(e.getMessage());
 				}
-
 				return true;
 			}
 		}
