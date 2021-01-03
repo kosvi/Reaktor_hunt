@@ -1,5 +1,6 @@
 package ui;
 
+import pathfinder.Step;
 import pathfinder.Path;
 import java.io.File;
 import java.io.IOException;
@@ -37,8 +38,10 @@ public class Cli {
 			} else if (selection == 2) {
 				this.drawMatrix();
 			} else if (selection == 3) {
-				this.findPath();
+				this.drawRoute();
 			} else if (selection == 4) {
+				this.printRoute();
+			} else if (selection == 5) {
 				break;
 			}
 		}
@@ -46,8 +49,54 @@ public class Cli {
 	}
 
 	private void findPath() {
-		this.route = new Path(this.grid.getMatrix());
-		this.route.findRoute();
+		if (this.route == null) {
+			System.out.println("Calculating route...");
+			this.route = new Path(this.grid.getMatrix());
+		}
+	}
+
+	private void printRoute() {
+		this.findPath();
+		System.out.print("Correct route is: \n" + this.route.getRoute());
+	}
+
+	// this method is crap and useless,
+	// I just wanted to see the route I calculated
+	private void drawRoute() {
+		this.findPath();
+		Node[][] matrix = this.grid.getMatrix();
+		char[][] map = new char[matrix.length][matrix[0].length];
+		for (int i = 0; i < map.length; i++) {
+			for (int j = 0; j < map[i].length; j++) {
+				if (matrix[i][j] != null) {
+					map[i][j] = matrix[i][j].getType();
+				} else {
+					map[i][j] = ' ';
+				}
+			}
+		}
+		String route = this.route.getRoute();
+		Step start = this.route.getStart();
+		int x = start.getX();
+		int y = start.getY();
+		for (int i = 0; i < route.length(); i++) {
+			if (route.charAt(i) == 'U') {
+				y--;
+			} else if (route.charAt(i) == 'D') {
+				y++;
+			} else if (route.charAt(i) == 'R') {
+				x++;
+			} else if (route.charAt(i) == 'L') {
+				x--;
+			}
+			map[y][x] = 'r';
+		}
+		for (int i = 0; i < map.length; i++) {
+			for (int j = 0; j < map[i].length; j++) {
+				System.out.print(map[i][j]);
+			}
+			System.out.print("\n");
+		}
 	}
 
 	private void drawMatrix() {
@@ -68,8 +117,9 @@ public class Cli {
 		System.out.println("\nUsing file: " + this.filename);
 		System.out.println("1) generate matrix");
 		System.out.println("2) draw matrix");
-		System.out.println("3) find route");
-		System.out.println("4) exit");
+		System.out.println("3) draw route");
+		System.out.println("4) print route");
+		System.out.println("5) exit");
 	}
 
 	private boolean getFilename() {

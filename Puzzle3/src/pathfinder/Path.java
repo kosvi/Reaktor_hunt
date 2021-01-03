@@ -11,6 +11,7 @@ public class Path {
 
 	private List<Step> steps;
 	private Node[][] grid;
+	private Step start;
 	private Step finish;
 	private List<Character> route;
 
@@ -20,6 +21,19 @@ public class Path {
 		this.grid = matrix;
 		this.findStart();
 		this.calculateSteps();
+		this.findRoute();
+	}
+
+	public String getRoute() {
+		StringBuilder sb = new StringBuilder();
+		for (char c : this.route) {
+			sb.append(Character.toString(c));
+		}
+		return sb.toString();
+	}
+	
+	public Step getStart() {
+		return this.start;
 	}
 
 	private void findStart() {
@@ -31,6 +45,7 @@ public class Path {
 				}
 				if (this.grid[i][j].getType() == 'S') {
 					this.steps.add(new Step(this.grid[i][j].getX(), this.grid[i][j].getY(), 0));
+					this.start = this.steps.get(0);
 					found = true;
 				}
 				if (found) {
@@ -43,20 +58,16 @@ public class Path {
 		}
 	}
 
-	public void findRoute() {
+	private void findRoute() {
 		// now we know where we found the finish and we can start there and go down the
 		// steps until we hit the first step we added when we found the start from the
 		// matrix
 		Step current = this.finish;
-		for (int i = this.steps.indexOf(this.finish); i >= 0; i--) {
+		while (current.getDistance() > 0) {
 			// ok, let's start from finish
 			Step nextCurrent = this.findSmallestAdjacent(current);
 			char direction = this.calculateDirection(current, nextCurrent);
 			this.route.add(direction);
-			if (nextCurrent.getDistance() == 0) {
-				// ok, we are in the start
-				break;
-			}
 			current = nextCurrent;
 		}
 		// now reverse the route (from finisth to start -> from start to finish)
@@ -66,12 +77,46 @@ public class Path {
 	private char calculateDirection(Step from, Step to) {
 		// since we are walking backwards, we return U when going down and R when goind
 		// left
-		return ' ';
+		char direction = ' ';
+		int fromX = from.getX();
+		int fromY = from.getY();
+		int toX = to.getX();
+		int toY = to.getY();
+		if (fromX < toX) {
+			// we moved right
+			direction = 'L';
+		} else if (toX < fromX) {
+			// we moved left
+			direction = 'R';
+		} else if (fromY < toY) {
+			// we moved down
+			direction = 'U';
+		} else if (toY < fromY) {
+			direction = 'D';
+		}
+		return direction;
 	}
 
 	private Step findSmallestAdjacent(Step s) {
 		Step smallest = null;
-		// think of how to find the smallest number next to s and return it
+		int x = s.getX();
+		int y = s.getY();
+		// list all possible adjacent cells
+		List<Step> adjacentCells = new ArrayList<>(
+				Arrays.asList(new Step(x + 1, y), new Step(x - 1, y), new Step(x, y + 1), new Step(x, y - 1)));
+		for (Step n : adjacentCells) {
+			// steps contains cell if it's safe to move into
+			if (this.steps.contains(n)) {
+				int index = this.steps.indexOf(n);
+				// and if it contains it, it has a distance (and hopefully smaller then our
+				// current)
+				if (smallest == null) {
+					smallest = this.steps.get(index);
+				} else if (smallest.getDistance() > this.steps.get(index).getDistance()) {
+					smallest = this.steps.get(index);
+				}
+			}
+		}
 		return smallest;
 	}
 
