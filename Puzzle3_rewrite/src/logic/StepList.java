@@ -27,6 +27,10 @@ public class StepList {
 		}
 	}
 
+	public Step get(int index) {
+		return this.steps.get(index);
+	}
+
 	public int size() {
 		return this.steps.size();
 	}

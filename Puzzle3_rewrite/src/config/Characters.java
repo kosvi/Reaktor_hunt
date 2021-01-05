@@ -12,4 +12,5 @@ public class Characters {
 	public static final char START = 'S';
 	public static final char FINISH = 'F';
 	public static final char UNKNOWN = 'U';
+	public static final char ROUTE = 'O';
 }
