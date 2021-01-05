@@ -13,7 +13,7 @@ class Main
 class Cli
 - User-interface
 
-**logic**
+**package logic**
 
 class Coordinate
 - Simple coordinate used to store coordinates in our grid
@@ -30,7 +30,7 @@ class StepList
 class Pathfinder
 - Finds the path from start to finish. Uses steplist to collect possible moves and to find the shorters path
 
-**config**
+**package config**
 
 class Characters
 - static finals with all the characters used in program
